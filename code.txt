@@ -1,0 +1,227 @@
+import java.util.*;
+
+
+public class scannerTest {
+	
+	enum State {//状态转换码
+		S0,	S2, S3, S4, S5		
+	}
+	
+	private static String[] keyWords = {"if","else","for","while","return"};
+	//static String string;
+	static String wordString;
+	private static char[] Code;//转化为字符数组
+	
+	
+	//判断输入的字符串是否为空
+	private static boolean isEmpty(String s){
+		if(s.isEmpty()){
+			System.out.println("Input is Empty!");
+			return false;
+		}else{
+			Code = s.replaceAll("\\s*","").toCharArray();
+			for(char ch : Code){
+			//Code = s.toCharArray();
+			System.out.println("---------1"+ch);
+			}
+			return true;
+		}
+	}
+	
+	//判断读入的字符是否为字母
+	public static boolean isLetter(char ch) {
+		if(ch>='a'&&ch<='z'||ch>='A'&&ch<='Z')
+			return true;
+		else
+			return false;
+	}
+	
+	//判断是否为数字
+	public static boolean isDigit(char ch) {
+		if(ch>='0'&&ch<='9')
+			return true;
+		else
+			return false;
+	}
+	
+	//判断是否为关键字
+	public static boolean isKey(String s){
+		int flag = 0;
+		for(int i = 0; i < keyWords.length; i++){
+			if(s.equals(keyWords[i])){
+				flag = 1;
+				break;
+			}
+		}
+		if(flag == 1){
+			return true;
+		}
+		return false;
+	}
+	
+/*	//判断是否为运算符
+	public static boolean isSymbols(char ch){
+		if(ch == '='||ch == '!'||ch == '<'||ch == '|'||ch == '&')
+		{
+			return true;
+		}
+		return false;
+	}*/
+	
+/*	//去除input的所有空格回车符等
+    public static String replaceBlank(String str) {  
+        String dest = "";  
+        if (str!=null) {  
+            Pattern p = Pattern.compile("\\s*|\t|\r|\n");  
+            Matcher m = p.matcher(str);  
+            dest = m.replaceAll("");  
+        }  
+        return dest;  
+    } */
+	
+	//判断输入的字符并输出单词符号
+    public static List<String> funScanner(String input){
+    	
+    	List<String> results = new ArrayList<String>();
+    	char ch = ' ';
+    	State state = State.S0;
+    	String str = null ;
+    	//char[] arr = input.toCharArray();
+    	isEmpty(input);
+    	//input = input.replaceAll("\n", "");
+    //	String input = replaceBlank(inpt); 
+    //	input = input.trim().replace(" +", " ").replaceAll("\\n+", " ");
+    	for(char nch : input.replaceAll("\\s*","").toCharArray()){System.out.println("----------2"+nch);}
+    //	int n = input.replaceAll("\\s*", "").length();
+    //	System.out.println("-------3"+n);
+    	for(int i = 0; i < input.length(); i++){
+    		switch(state){
+    		case S0:
+    			ch = input.charAt(i);
+    			//判断是否为界符
+    		    if(ch == '(' ||ch == ')' ||ch == '['
+    					||ch == ']' ||ch == '{' ||ch == '}'
+    					||ch == ';' ||ch == '.' ||ch == ',')
+                        {
+    				        
+    				        state = State.S5;
+    			}
+    			
+    			//判断是否是数字
+    			else if(isDigit(ch))
+    			{
+    				str = "";
+    				str += ch;
+    				state = State.S3;
+    			}
+    			
+    			//判断是否是字母
+    			else if(isLetter(ch))
+    				{
+    				str = "";
+    				str += ch;
+    				state = State.S2;
+    			}else if(ch == '+' ||ch == '-' ||ch == '*' //判断是否是操作符
+    					||ch == '/' ||ch == '>' )
+    			    {
+    				    state = State.S5;
+    			}else if(ch == '&'){
+    					str ="";
+    					str += ch;
+    					ch = input.charAt(i+1);
+    					if(ch == '&'){
+    						str += ch;
+    						state = State.S4;
+    					}else{
+    						state = State.S5;
+    					}
+    			}else if(ch == '|'){
+    				str ="";
+					str += ch;
+					ch = input.charAt(i+1);
+					if(ch == '|'){
+						str += ch;
+						state = State.S4;
+					}else{
+						state = State.S5;
+					}
+    			}else if(ch == '<'){
+    				str ="";
+					str += ch;
+					ch = input.charAt(i+1);
+					if(ch == '='){
+						str += ch;
+						state = State.S4;
+					}else{
+						state = State.S5;
+					}	
+    			}
+    	        break;
+    			
+    		case S4:
+    			i--;
+    			System.out.println( str );
+    			wordString = ( str );
+    			results.add(wordString);
+    			state = State.S0;
+    			break;
+    			
+    		case S5:
+    			i--;
+    			System.out.println( ch );
+    			wordString = ( ch + "" );
+    			results.add(wordString);
+    			state = State.S0;
+    			break;
+    			
+    		case S2:
+    			if(isLetter(ch = input.charAt(i)))
+    			{
+    				str += ch;
+    			}else{
+    				if(isKey(str))
+    				{
+    					System.out.println( str );
+    					wordString = ( str );
+    					results.add(wordString);
+    				}else{
+    					System.out.println( str );
+    					wordString = (  str );
+    					results.add(wordString);
+    				}
+    				i--;
+    				state = State.S0;
+    			}
+    			break;
+    			
+    		case S3:
+    			if(isDigit( ch = input.charAt(i)))
+    			{
+    				str += ch;
+    			}else{
+    				System.out.println( str );
+    				wordString = ( str );
+    				results.add(wordString);
+    				i--;
+    				state = State.S0;
+    			}
+    			break;
+    			
+    	}
+        
+    }  
+        
+		return results;
+            
+    }
+    
+    public static void main(String[] args){
+    	List<String> results1 = scannerTest.funScanner("if (x >0){\ny<=  7;\n}");
+    //	List<String> results1 = scannerTest.funScanner("for   (i<=0;i<10; i=i+1){\n z<=z/2;}\n return 0;");
+    	
+    }
+    
+
+}
+
+
